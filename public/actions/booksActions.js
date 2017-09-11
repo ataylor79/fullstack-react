@@ -4,7 +4,6 @@ import axios from 'axios';
 // refactor these calls to reduce repeated code
 
 export const getBooks = () => {
-	console.log('getting books')
 	return dispatch => {
 		axios.get('/api/books')
 			.then(resp => dispatch({ type: actionTypes.GET_BOOKS_SUCCESS, payload: resp.data }))

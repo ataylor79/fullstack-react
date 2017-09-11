@@ -1,15 +1,22 @@
 import * as actionTypes from './actionTypes';
+import axios from 'axios';
 
 
-export const getCart = () => ({
-	type: actionTypes.GET_CART_SUCCESS,
-	payload: book
-});
+export const getCart = () => {
+	return dispatch => {
+		axios.get('/api/cart')
+			.then(resp => dispatch({ type: actionTypes.GET_CART_SUCCESS, payload: resp.data }))
+			.catch(err => dispatch({ type: actionTypes.GET_CART_FAILED, payload: 'There was an error getting the cart.' }))
+	}
+};
 
-export const addToCart = book => ({
-	type: actionTypes.ADD_TO_CART_SUCCESS,
-	payload: book
-});
+export const addToCart = cart => {
+	return dispatch => {
+		axios.post('/api/cart', cart)
+			.then(resp => dispatch({ type: actionTypes.ADD_TO_CART_SUCCESS, payload: resp.data }))
+			.catch(err => dispatch({ type: actionTypes.ADD_TO_CART_FAILED, payload: 'There was an error posting to cart.' }))
+	}
+};
 
 export const updateCart = (_id, unit, cart) => {
 
@@ -27,14 +34,17 @@ export const updateCart = (_id, unit, cart) => {
 		...currentItemsToUpdate.slice(updatedItemIndex + 1)
 	];
 
-	return {
-		type: actionTypes.UPDATE_CART_SUCCESS,
-		payload: newCart
-	}
-	
+	 return dispatch => {
+		axios.post('/api/cart', newCart)
+			.then(resp => dispatch({ type: actionTypes.UPDATE_CART_SUCCESS, payload: resp.data }))
+			.catch(err => dispatch({ type: actionTypes.UPDATE_CART_FAILED, payload: 'There was an error updating the cart.' }))
+	}	
 }
 
-export const deleteFromCart = _id => ({
-	type: actionTypes.DELETE_FROM_CART_SUCCESS,
-	payload: _id
-})
+export const deleteFromCart = cart => {
+	return dispatch => {
+		axios.post('/api/cart', cart)
+			.then(resp => dispatch({ type: actionTypes.ADD_TO_CART_SUCCESS, payload: resp.data }))
+			.catch(err => dispatch({ type: actionTypes.ADD_TO_CART_FAILED, payload: 'There was an error posting to cart.' }))
+	}
+};

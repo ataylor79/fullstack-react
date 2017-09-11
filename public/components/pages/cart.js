@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { Modal, Panel, Col, Row, Well, Button, ButtonGroup, Label } from 'react-bootstrap';
 import { bindActionCreators } from 'redux';
-import { deleteFromCart, updateCart } from '../../actions/cartActions';
+import { deleteFromCart, updateCart, getCart } from '../../actions/cartActions';
 
 class Cart extends React.Component{
 
@@ -11,6 +11,10 @@ class Cart extends React.Component{
 		this.state = {
 			showModal: false
 		};
+	}
+
+	componentDidMount() {
+		this.props.getCart();
 	}
 
 	modalOpen() { 
@@ -22,7 +26,18 @@ class Cart extends React.Component{
 	}
 	
 	handleDelete(_id) {
-		this.props.deleteFromCart({ _id });
+		// copy cart state
+		const currentItemsToDelete = [...this.props.cart];
+		// find index of item to delete
+		const deletedItemIndex = currentItemsToDelete.findIndex(item => item._id === _id);
+		
+		// return state without deleted item
+		const updatedCart = [
+			...currentItemsToDelete.slice(0, deletedItemIndex),
+			...currentItemsToDelete.slice(deletedItemIndex + 1)
+		];
+
+		this.props.deleteFromCart(updatedCart);
 	}
 
 	handleIncrement(_id) {
@@ -102,6 +117,9 @@ const mapStateToProps = state => ({
 	totalAmount: state.cart.totalAmount,
 	totalQuantity: state.cart.totalQuantity 
 });
-const mapDispatchToProps = dispatch => bindActionCreators({ deleteFromCart, updateCart }, dispatch);
+const mapDispatchToProps = dispatch => bindActionCreators({ 
+	deleteFromCart, 
+	updateCart, 
+	getCart }, dispatch);
 
 export default connect(mapStateToProps, mapDispatchToProps)(Cart);

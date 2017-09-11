@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "start": "node lib/bin/server",
-    "start:api": "node lib/apiServer", 
+    "start:api": "node lib/apiServer",
     "build": "clear lib && cross-env BABEL_ENV=node babel src -d lib --copy-files",
     "build:watch": "npm run build -- --watch",
     "serve": "concurrently --kill-others-on-fail --names \" BUILD , BUNDLE , SERVE, SERVE-API \" -c \"bgMagenta.bold,bgCyan.bold,bgRed.bold,bgGreen.bold\" --prefix \"{name}\" \"npm run build:watch\" \"npm run bundle\" \"npm run start\" \"npm run start:api\" ",
@@ -17,8 +17,6 @@
     "debug": "~2.6.3",
     "express": "~4.15.2",
     "http-proxy": "^1.16.2",
-    "i": "^0.3.5",
-    "jade": "~1.11.0",
     "mongoose": "^4.11.10",
     "morgan": "~1.8.1",
     "nodemon": "^1.12.0",

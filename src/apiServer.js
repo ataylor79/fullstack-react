@@ -1,7 +1,10 @@
 import express from 'express';
 import cookieParser from 'cookie-parser';
 import bodyParser from 'body-parser';
+import session from 'express-session';
+import connectMongo from 'connect-mongo';
 
+const MongoStore = connectMongo(session);
 const app = express();
 
 app.use(bodyParser.json());
@@ -12,6 +15,17 @@ app.use(cookieParser());
 // APIs
 import mongoose from 'mongoose';
 mongoose.connect('mongodb://localhost:27017/cartdb', {useMongoClient: true})
+
+const db = mongoose.connection;
+db.on('error', console.error.bind(console, '# MongoDB - connection error: '))
+
+app.use(session({
+	secret: 'aSecretString',
+	saveUnitialized: false,
+	resave: true,
+	cookie: {maxAge: 1000* 60 * 60 * 24 * 2},
+	store: new MongoStore({mongooseConnection: db, ttl: 2 * 24 * 60 * 60})
+}))
 
 // BOOKS API
 import Books from './models/books';
@@ -50,8 +64,6 @@ app.put('/books/:_id', (req, res) => {
 app.delete('/books/:_id', (req, res) => {
 	const query = {_id: req.params._id };
 
-	console.log('query', query)
-
 	Books.remove(query, (err, books) => {
 		if(err) { throw err; }
 
@@ -59,11 +71,50 @@ app.delete('/books/:_id', (req, res) => {
 	})
 })
 
-// CART API
+
 // cart.get
+app.get('/cart', (req, res) => {
+	if (typeof req.session.cart !== 'undefined') { 
+		res.json(req.session.cart)
+	}
+});
 // cart.post
-// cart.delete
-// cart.put
+app.post('/cart', (req, res) => {
+	const cart = req.body;
+
+	req.session.cart = cart;
+	req.session.save((err) => {
+		if (err) { throw err; }
+
+		res.json(req.session.cart);
+	})
+});
+
+
+// // cart.delete
+// app.delete('/cart/:_id', (req, res) => {
+// 	const query = { bookId: req.params._id };
+
+// 	Cart.remove(query, (err, item) => {
+// 		if (err) { throw err; }
+
+// 		res.json(item);
+// 	});
+// })
+
+// // cart.put
+// app.put('/cart/:_id', (req, res) => {
+// 	const item = req.body;
+// 	const query = { _id: req.params._id };
+// 	const update = { '$set': { ...item }};
+// 	const options = { new: true };
+
+// 	Cart.findOneAndUpdate(query, update, options, (err, item) => {
+// 		if(err) { throw err; }
+
+// 		res.json(item);
+// 	})
+// })
 
 // END APIs
 
