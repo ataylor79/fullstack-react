@@ -5,18 +5,30 @@ const reducers = (state={ books: []}, action) => {
 	let books;
 
 	switch(action.type) {
-
 		case actionTypes.GET_BOOKS_SUCCESS:
-			
 			return { ...state, books: [...action.payload] };
 			break;
 
 		case actionTypes.POST_BOOK_SUCCESS:
+
 			books = [
+				...state,
 				...state.books,
-				...action.payload
+				...action.payload,
 			];
-			return { books };
+			return { books,
+					msg: 'Saved! Click to continue',
+					style: 'success',
+					validation: 'success'
+			};
+			break;
+
+		case actionTypes.POST_BOOK_FAILED:
+			return { ...state,
+				msg: 'Please try again',
+				style: 'danger',
+				validation: 'error'
+			};
 			break;
 
 		case actionTypes.DELETE_BOOK_SUCCESS:
@@ -31,6 +43,15 @@ const reducers = (state={ books: []}, action) => {
 
 			// return sliced array of books, remove the deleted object
 			return { books };
+			break;
+
+		case actionTypes.RESET_BUTTON:
+
+			return { ...state,
+				msg: null,
+				style: 'primary',
+				validation: null
+			};
 			break;
 
 		case actionTypes.UPDATE_BOOK:

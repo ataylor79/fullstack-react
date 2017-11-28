@@ -3,7 +3,7 @@ import Mongoose from 'mongoose';
 const booksSchema = Mongoose.Schema({
 	title: String,
 	description: String,
-	images: String,
+	image: String,
 	price:Number
 });
 

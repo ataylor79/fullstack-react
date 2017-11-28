@@ -35,3 +35,8 @@ export const updateBook = book => ({
 	type: actionTypes.UPDATE_BOOK, 
 	payload:book
 });
+
+// update book with object
+export const resetButton = () => ({
+	type: actionTypes.RESET_BUTTON,
+});

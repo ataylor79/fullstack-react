@@ -3,6 +3,7 @@ import path from 'path';
 import favicon from 'serve-favicon';
 import logger from 'morgan';
 import httpProxy from 'http-proxy';
+import requestHandler from './requestHandler';
 
 import index from './routes/index';
 import users from './routes/users';
@@ -21,9 +22,9 @@ app.use('/api', (req, res) => apiProxy.web(req,res));
 app.use(logger('dev'));
 app.use(express.static(path.join(__dirname, '../dist')));
 
-app.use('*', (req, res) => {
-	res.sendFile(path.resolve(__dirname, '../dist', 'index.html'))
-});
+app.set('view engine', 'ejs');
+
+app.use(requestHandler);
 
 // catch 404 and forward to error handler
 app.use((req, res, next) => {
@@ -38,6 +39,7 @@ app.use((err, req, res, next) => {
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
 
+  console.log('**ERROR**', err);
   // render the error page
   res.status(err.status || 500);
   res.render('error');

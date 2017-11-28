@@ -3,6 +3,7 @@ import cookieParser from 'cookie-parser';
 import bodyParser from 'body-parser';
 import session from 'express-session';
 import connectMongo from 'connect-mongo';
+import fs from 'fs';
 
 const MongoStore = connectMongo(session);
 const app = express();
@@ -59,7 +60,8 @@ app.put('/books/:_id', (req, res) => {
 
 		res.json(books);
 	})
-})
+});
+
 
 app.delete('/books/:_id', (req, res) => {
 	const query = {_id: req.params._id };
@@ -69,7 +71,7 @@ app.delete('/books/:_id', (req, res) => {
 
 		res.json(books);
 	})
-})
+});
 
 
 // cart.get
@@ -90,31 +92,19 @@ app.post('/cart', (req, res) => {
 	})
 });
 
+// Get images api
+app.get('/images', (req, res) => {
+	const imgFolder = __dirname + '/public/images';
 
-// // cart.delete
-// app.delete('/cart/:_id', (req, res) => {
-// 	const query = { bookId: req.params._id };
+	fs.readdir(imgFolder, (err, files) => {
+		if (err) console.error(err);
 
-// 	Cart.remove(query, (err, item) => {
-// 		if (err) { throw err; }
+		const filesArr = [];
+		files.forEach(name => filesArr.push({ name }) );
+		res.json(filesArr);
+	})
+});
 
-// 		res.json(item);
-// 	});
-// })
-
-// // cart.put
-// app.put('/cart/:_id', (req, res) => {
-// 	const item = req.body;
-// 	const query = { _id: req.params._id };
-// 	const update = { '$set': { ...item }};
-// 	const options = { new: true };
-
-// 	Cart.findOneAndUpdate(query, update, options, (err, item) => {
-// 		if(err) { throw err; }
-
-// 		res.json(item);
-// 	})
-// })
 
 // END APIs
 
